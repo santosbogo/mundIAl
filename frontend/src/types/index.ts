@@ -1,0 +1,48 @@
+export interface TimeSlot {
+  day_of_week: string
+  start_hour: number
+  end_hour: number
+}
+
+export interface UserProfile {
+  favorite_teams: string[]
+  favorite_players: string[]
+  available_slots: TimeSlot[]
+  timezone: string
+  country: string
+}
+
+export interface ScoreBreakdown {
+  team_affinity: number
+  rival_affinity: number
+  star_player_playing: number
+  availability_score: number
+  timezone_penalty: number
+  rivalry_index: number
+  star_power: number
+  group_stakes: number
+  expected_competitiveness: number
+  narrative_score: number
+  regional_affinity: number
+}
+
+export interface MatchRecommendation {
+  match_id: string
+  group: string
+  team_a: string
+  team_b: string
+  utc_datetime: string
+  local_datetime: string | null
+  venue: string
+  city: string
+  score: number
+  category: 'imperdible' | 'vale_la_pena' | 'para_el_resumen'
+  explanation: string
+  score_breakdown: ScoreBreakdown
+}
+
+export interface RecommendationResponse {
+  imperdible: MatchRecommendation[]
+  vale_la_pena: MatchRecommendation[]
+  para_el_resumen: MatchRecommendation[]
+}

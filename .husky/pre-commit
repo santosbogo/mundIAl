@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+set -e
+
+ROOT="$(git rev-parse --show-toplevel)"
+
+# ── Backend: ruff format (auto-fix) + ruff check ─────────────
+echo "Backend: formatting and linting..."
+(cd "$ROOT/backend" && uv run ruff format app/ && uv run ruff check app/)
+
+# Re-stage any files ruff reformatted in place
+git -C "$ROOT" diff --name-only -- 'backend/app/*.py' 'backend/app/**/*.py' \
+  | xargs -r git -C "$ROOT" add
+
+# ── Frontend: ESLint + TypeScript type-check ─────────────────
+echo "Frontend: linting and type-checking..."
+(cd "$ROOT/frontend" && npm run lint && npx tsc --noEmit)

@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+pip-wheel-metadata/
+
+# uv / virtualenv
+.venv/
+venv/
+env/
+.env
+*.env.local
+
+# mypy / ruff caches
+.mypy_cache/
+.ruff_cache/
+.dmypy.json
+dmypy.json
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Node / npm
+node_modules/
+.npm
+*.tsbuildinfo
+
+# Vite / build output
+frontend/dist/
+frontend/.vite/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Docker volumes (local)
+postgres_data/
+
+# ML model (generated — do not commit until trained)
+# backend/app/models/classifier.pkl
+
+# uv lock is committed, but not the cache
+.uv/

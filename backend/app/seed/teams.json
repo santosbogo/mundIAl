@@ -1,0 +1,434 @@
+[
+  {
+    "name": "Argentina",
+    "fifa_ranking": 3,
+    "confederation": "CONMEBOL",
+    "rivals": ["Brazil", "Uruguay", "England"],
+    "key_players": ["Lionel Messi", "Lautaro Martínez", "Julián Álvarez", "Alexis Mac Allister", "Rodrigo De Paul"],
+    "star_power": 10.0,
+    "narrative_flags": { "defending_champion": true, "wc_winner_count": 3 }
+  },
+  {
+    "name": "Brazil",
+    "fifa_ranking": 6,
+    "confederation": "CONMEBOL",
+    "rivals": ["Argentina", "Uruguay"],
+    "key_players": ["Vinicius Jr", "Rodrygo", "Raphinha", "Endrick", "Casemiro"],
+    "star_power": 9.5,
+    "narrative_flags": { "wc_winner_count": 5 }
+  },
+  {
+    "name": "France",
+    "fifa_ranking": 1,
+    "confederation": "UEFA",
+    "rivals": ["Germany", "England", "Spain"],
+    "key_players": ["Kylian Mbappé", "Antoine Griezmann", "Marcus Thuram", "Aurélien Tchouaméni", "Eduardo Camavinga"],
+    "star_power": 10.0,
+    "narrative_flags": { "wc_winner_count": 2 }
+  },
+  {
+    "name": "Spain",
+    "fifa_ranking": 2,
+    "confederation": "UEFA",
+    "rivals": ["Portugal", "France", "Germany"],
+    "key_players": ["Pedri", "Lamine Yamal", "Dani Olmo", "Rodri", "Ferrán Torres"],
+    "star_power": 9.5,
+    "narrative_flags": { "wc_winner_count": 1, "euro_champion_2024": true }
+  },
+  {
+    "name": "England",
+    "fifa_ranking": 4,
+    "confederation": "UEFA",
+    "rivals": ["Germany", "Argentina", "Scotland", "Croatia"],
+    "key_players": ["Jude Bellingham", "Harry Kane", "Phil Foden", "Bukayo Saka", "Declan Rice"],
+    "star_power": 9.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Portugal",
+    "fifa_ranking": 5,
+    "confederation": "UEFA",
+    "rivals": ["Spain", "France"],
+    "key_players": ["Cristiano Ronaldo", "Bruno Fernandes", "Bernardo Silva", "Rafael Leão", "João Neves"],
+    "star_power": 9.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Netherlands",
+    "fifa_ranking": 7,
+    "confederation": "UEFA",
+    "rivals": ["Belgium", "Germany"],
+    "key_players": ["Virgil van Dijk", "Xavi Simons", "Cody Gakpo", "Tijjani Reijnders", "Denzel Dumfries"],
+    "star_power": 8.5,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Morocco",
+    "fifa_ranking": 8,
+    "confederation": "CAF",
+    "rivals": ["Algeria", "Senegal"],
+    "key_players": ["Achraf Hakimi", "Hakim Ziyech", "Youssef En-Nesyri", "Sofyan Amrabat", "Azzedine Ounahi"],
+    "star_power": 7.5,
+    "narrative_flags": { "wc_2022_semifinalist": true }
+  },
+  {
+    "name": "Belgium",
+    "fifa_ranking": 9,
+    "confederation": "UEFA",
+    "rivals": ["Netherlands", "France"],
+    "key_players": ["Kevin De Bruyne", "Romelu Lukaku", "Lois Openda", "Jeremy Doku", "Arthur Theate"],
+    "star_power": 8.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Germany",
+    "fifa_ranking": 10,
+    "confederation": "UEFA",
+    "rivals": ["France", "England", "Netherlands"],
+    "key_players": ["Florian Wirtz", "Jamal Musiala", "Kai Havertz", "Joshua Kimmich", "Antonio Rüdiger"],
+    "star_power": 9.0,
+    "narrative_flags": { "wc_winner_count": 4 }
+  },
+  {
+    "name": "Croatia",
+    "fifa_ranking": 11,
+    "confederation": "UEFA",
+    "rivals": ["England", "Serbia"],
+    "key_players": ["Luka Modrić", "Mateo Kovačić", "Joško Gvardiol", "Andrej Kramarić", "Ivan Perišić"],
+    "star_power": 8.0,
+    "narrative_flags": { "wc_2018_finalist": true }
+  },
+  {
+    "name": "Colombia",
+    "fifa_ranking": 13,
+    "confederation": "CONMEBOL",
+    "rivals": ["Ecuador", "Argentina"],
+    "key_players": ["Luis Díaz", "Jhon Jáder Durán", "Cucho Hernández", "Mateus Uribe", "Miguel Borja"],
+    "star_power": 7.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Senegal",
+    "fifa_ranking": 14,
+    "confederation": "CAF",
+    "rivals": ["Morocco", "Ivory Coast"],
+    "key_players": ["Sadio Mané", "Ismaïla Sarr", "Pape Gueye", "Édouard Mendy", "Krepin Diatta"],
+    "star_power": 7.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Mexico",
+    "fifa_ranking": 15,
+    "confederation": "CONCACAF",
+    "rivals": ["USA", "Guatemala"],
+    "key_players": ["Santiago Giménez", "Hirving Lozano", "Alexis Vega", "Edson Álvarez", "Raúl Jiménez"],
+    "star_power": 6.5,
+    "narrative_flags": { "host_nation": true }
+  },
+  {
+    "name": "USA",
+    "fifa_ranking": 16,
+    "confederation": "CONCACAF",
+    "rivals": ["Mexico", "Canada"],
+    "key_players": ["Christian Pulisic", "Weston McKennie", "Tyler Adams", "Gio Reyna", "Ricardo Pepi"],
+    "star_power": 6.5,
+    "narrative_flags": { "host_nation": true }
+  },
+  {
+    "name": "Uruguay",
+    "fifa_ranking": 17,
+    "confederation": "CONMEBOL",
+    "rivals": ["Argentina", "Brazil"],
+    "key_players": ["Darwin Núñez", "Federico Valverde", "Ronald Araújo", "Rodrigo Bentancur", "Facundo Torres"],
+    "star_power": 7.5,
+    "narrative_flags": { "wc_winner_count": 2 }
+  },
+  {
+    "name": "Japan",
+    "fifa_ranking": 18,
+    "confederation": "AFC",
+    "rivals": ["South Korea"],
+    "key_players": ["Kaoru Mitoma", "Takumi Minamino", "Ritsu Doan", "Daichi Kamada", "Takehiro Tomiyasu"],
+    "star_power": 7.0,
+    "narrative_flags": { "wc_2022_round_of_16": true }
+  },
+  {
+    "name": "Switzerland",
+    "fifa_ranking": 19,
+    "confederation": "UEFA",
+    "rivals": ["Germany", "Austria"],
+    "key_players": ["Granit Xhaka", "Manuel Akanji", "Breel Embolo", "Ruben Vargas", "Remo Freuler"],
+    "star_power": 6.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Iran",
+    "fifa_ranking": 21,
+    "confederation": "AFC",
+    "rivals": ["Saudi Arabia", "Iraq"],
+    "key_players": ["Mehdi Taremi", "Sardar Azmoun", "Alireza Jahanbakhsh", "Saman Ghoddos", "Ali Gholizadeh"],
+    "star_power": 6.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Turkey",
+    "fifa_ranking": 22,
+    "confederation": "UEFA",
+    "rivals": ["Greece"],
+    "key_players": ["Hakan Çalhanoğlu", "Arda Güler", "Kenan Yıldız", "Zeki Çelik", "Merih Demiral"],
+    "star_power": 7.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Ecuador",
+    "fifa_ranking": 23,
+    "confederation": "CONMEBOL",
+    "rivals": ["Colombia", "Peru"],
+    "key_players": ["Moisés Caicedo", "Piero Hincapié", "Gonzalo Plata", "Jeremy Sarmiento", "Enner Valencia"],
+    "star_power": 6.5,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Austria",
+    "fifa_ranking": 24,
+    "confederation": "UEFA",
+    "rivals": ["Germany", "Czech Republic"],
+    "key_players": ["Marcel Sabitzer", "Christoph Baumgartner", "David Alaba", "Konrad Laimer", "Marko Arnautović"],
+    "star_power": 6.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "South Korea",
+    "fifa_ranking": 25,
+    "confederation": "AFC",
+    "rivals": ["Japan"],
+    "key_players": ["Son Heung-min", "Kim Min-jae", "Lee Kang-in", "Hwang Hee-chan", "Cho Gue-sung"],
+    "star_power": 7.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Australia",
+    "fifa_ranking": 27,
+    "confederation": "AFC",
+    "rivals": ["New Zealand"],
+    "key_players": ["Mathew Ryan", "Harry Souttar", "Mitchell Duke", "Riley McGree", "Ajdin Hrustic"],
+    "star_power": 5.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Algeria",
+    "fifa_ranking": 28,
+    "confederation": "CAF",
+    "rivals": ["Morocco", "Tunisia"],
+    "key_players": ["Riyad Mahrez", "Youcef Atal", "Houssem Aouar", "Andy Delort", "Baghdad Bounedjah"],
+    "star_power": 7.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Egypt",
+    "fifa_ranking": 29,
+    "confederation": "CAF",
+    "rivals": ["Algeria", "Tunisia"],
+    "key_players": ["Mohamed Salah", "Omar Marmoush", "Mostafa Mohamed", "Ahmed Hegazi", "Mahmoud Trezeguet"],
+    "star_power": 8.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Norway",
+    "fifa_ranking": 31,
+    "confederation": "UEFA",
+    "rivals": ["Sweden", "Denmark"],
+    "key_players": ["Erling Haaland", "Martin Ødegaard", "Alexander Sørloth", "Sander Berge", "Veton Berisha"],
+    "star_power": 8.5,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Ivory Coast",
+    "fifa_ranking": 34,
+    "confederation": "CAF",
+    "rivals": ["Ghana", "Senegal"],
+    "key_players": ["Sébastien Haller", "Wilfried Zaha", "Franck Kessié", "Simon Adingra", "Nicolas Pépé"],
+    "star_power": 6.5,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Congo DR",
+    "fifa_ranking": 46,
+    "confederation": "CAF",
+    "rivals": ["Cameroon"],
+    "key_players": ["Chancel Mbemba", "Cédric Bakambu", "Yannick Ferreira Carrasco", "Arthur Masuaku", "Merveille Bope Bokadi"],
+    "star_power": 5.5,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Sweden",
+    "fifa_ranking": 38,
+    "confederation": "UEFA",
+    "rivals": ["Norway", "Denmark"],
+    "key_players": ["Viktor Gyökeres", "Alexander Isak", "Dejan Kulusevski", "Emil Forsberg", "Ludwig Augustinsson"],
+    "star_power": 7.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Czech Republic",
+    "fifa_ranking": 41,
+    "confederation": "UEFA",
+    "rivals": ["Slovakia", "Austria"],
+    "key_players": ["Tomáš Souček", "Patrik Schick", "Vladimír Coufal", "Lukáš Provod", "Jan Kuchta"],
+    "star_power": 5.5,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Scotland",
+    "fifa_ranking": 43,
+    "confederation": "UEFA",
+    "rivals": ["England"],
+    "key_players": ["Andrew Robertson", "Scott McTominay", "Kieran Tierney", "Billy Gilmour", "Lawrence Shankland"],
+    "star_power": 6.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Paraguay",
+    "fifa_ranking": 50,
+    "confederation": "CONMEBOL",
+    "rivals": ["Argentina", "Uruguay"],
+    "key_players": ["Miguel Almirón", "Ángel Romero", "Antonio Sanabria", "Julio Enciso", "Omar Alderete"],
+    "star_power": 6.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Qatar",
+    "fifa_ranking": 55,
+    "confederation": "AFC",
+    "rivals": ["Saudi Arabia"],
+    "key_players": ["Akram Afif", "Almoez Ali", "Hasan Al-Haydos", "Bassam Al-Rawi", "Boualem Khoukhi"],
+    "star_power": 5.0,
+    "narrative_flags": { "wc_2022_host": true }
+  },
+  {
+    "name": "Tunisia",
+    "fifa_ranking": 44,
+    "confederation": "CAF",
+    "rivals": ["Algeria", "Egypt"],
+    "key_players": ["Hannibal Mejbri", "Youssef Msakni", "Hamza Rafia", "Mohamed Drager", "Dylan Bronn"],
+    "star_power": 5.5,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Iraq",
+    "fifa_ranking": 57,
+    "confederation": "AFC",
+    "rivals": ["Iran", "Saudi Arabia"],
+    "key_players": ["Aymen Hussein", "Amjed Attwan", "Ahmed Ibrahim", "Bashar Resan", "Alaa Abbas"],
+    "star_power": 3.5,
+    "narrative_flags": {}
+  },
+  {
+    "name": "South Africa",
+    "fifa_ranking": 60,
+    "confederation": "CAF",
+    "rivals": ["Zimbabwe", "Nigeria"],
+    "key_players": ["Percy Tau", "Teboho Mokoena", "Ronwen Williams", "Keagan Dolly", "Themba Zwane"],
+    "star_power": 4.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Saudi Arabia",
+    "fifa_ranking": 61,
+    "confederation": "AFC",
+    "rivals": ["Iran", "Qatar"],
+    "key_players": ["Salem Al-Dawsari", "Mohammed Al-Nasser", "Feras Al-Brikan", "Saleh Al-Shehri", "Yasser Al-Shahrani"],
+    "star_power": 5.0,
+    "narrative_flags": { "wc_2022_upset_argentina": true }
+  },
+  {
+    "name": "Jordan",
+    "fifa_ranking": 63,
+    "confederation": "AFC",
+    "rivals": ["Iraq", "Saudi Arabia"],
+    "key_players": ["Yazan Al-Naimat", "Hamza Al-Dardour", "Musa Al-Taamari", "Baha Faisal", "Ahmad Hayel"],
+    "star_power": 3.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Bosnia-Herzegovina",
+    "fifa_ranking": 65,
+    "confederation": "UEFA",
+    "rivals": ["Croatia", "Serbia"],
+    "key_players": ["Ermedin Demirović", "Edin Džeko", "Sead Kolašinac", "Miralem Pjanić", "Kenan Pirić"],
+    "star_power": 5.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Cape Verde",
+    "fifa_ranking": 69,
+    "confederation": "CAF",
+    "rivals": ["Senegal"],
+    "key_players": ["Ryan Mendes", "Kevin Pina", "Bryan Tavares", "Steven Fortes", "Jamiro Monteiro"],
+    "star_power": 4.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Panama",
+    "fifa_ranking": 33,
+    "confederation": "CONCACAF",
+    "rivals": ["Costa Rica", "Honduras"],
+    "key_players": ["Cecilio Waterman", "Michael Amir Murillo", "Alberto Quintero", "Freddie Góndola", "Andrés Andrade"],
+    "star_power": 4.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Ghana",
+    "fifa_ranking": 74,
+    "confederation": "CAF",
+    "rivals": ["Nigeria", "Ivory Coast"],
+    "key_players": ["Thomas Partey", "Kudus Mohammed", "Jordan Ayew", "Tariq Lamptey", "Daniel Amartey"],
+    "star_power": 6.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Uzbekistan",
+    "fifa_ranking": 50,
+    "confederation": "AFC",
+    "rivals": ["Kazakhstan"],
+    "key_players": ["Eldor Shomurodov", "Abbosbek Fayzullaev", "Jaloliddin Masharipov", "Otabek Shukurov", "Temur Juraev"],
+    "star_power": 4.5,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Curaçao",
+    "fifa_ranking": 82,
+    "confederation": "CONCACAF",
+    "rivals": ["Jamaica", "Trinidad and Tobago"],
+    "key_players": ["Leandro Bacuna", "Jurien Gaari", "Rangelo Janga", "Elson Hooi", "Cuco Martina"],
+    "star_power": 3.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "New Zealand",
+    "fifa_ranking": 85,
+    "confederation": "OFC",
+    "rivals": ["Australia"],
+    "key_players": ["Chris Wood", "Winston Reid", "Matt Garbett", "Clayton Lewis", "Bill Tuilagi"],
+    "star_power": 4.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Haiti",
+    "fifa_ranking": 83,
+    "confederation": "CONCACAF",
+    "rivals": ["Jamaica", "Cuba"],
+    "key_players": ["Carnejy Antoine", "Kevin Lafrance", "Steeven Saba", "Duckens Nazon", "Ronaldo Damus"],
+    "star_power": 3.0,
+    "narrative_flags": {}
+  },
+  {
+    "name": "Canada",
+    "fifa_ranking": 47,
+    "confederation": "CONCACAF",
+    "rivals": ["USA", "Mexico"],
+    "key_players": ["Alphonso Davies", "Jonathan David", "Cyle Larin", "Tajon Buchanan", "Richie Laryea"],
+    "star_power": 6.5,
+    "narrative_flags": { "host_nation": true }
+  }
+]
