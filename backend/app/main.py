@@ -38,5 +38,5 @@ app.include_router(players_router)
 
 
 @app.get("/health")
-async def health() -> dict[str, str]:
-    return {"status": "ok"}
+async def health() -> dict[str, object]:
+    return {"status": "ok", "cors_origins": settings.cors_origins_list}
