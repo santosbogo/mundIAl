@@ -11,27 +11,27 @@ from app.ml.feature_engineering import FEATURE_NAMES
 from app.modules.recommendations.recommendations_schemas import MatchData, UserProfile
 
 _FEATURE_TEMPLATES: dict[str, str] = {
-    "team_affinity": "one of your favorite teams is playing",
-    "rival_affinity": "a rival of your favorite team is playing",
-    "star_player_playing": "one of your favorite players is in this match",
-    "availability_score": "this match fits your schedule perfectly",
-    "rivalry_index": "this is a high-intensity historical rivalry",
-    "star_power": "both squads are packed with world-class talent",
-    "group_stakes": "the group qualification stakes are very high",
-    "expected_competitiveness": "these teams are very evenly matched",
-    "narrative_score": "this match has major tournament narrative significance",
-    "regional_affinity": "a team from your region is competing",
+    "team_affinity": "uno de tus equipos favoritos juega este partido",
+    "rival_affinity": "juega un rival de tu equipo favorito",
+    "star_player_playing": "uno de tus jugadores favoritos está en este partido",
+    "availability_score": "el horario encaja perfecto con tu disponibilidad",
+    "rivalry_index": "es una rivalidad histórica de alta intensidad",
+    "star_power": "ambas selecciones están llenas de figuras de clase mundial",
+    "group_stakes": "la clasificación del grupo está en juego",
+    "expected_competitiveness": "los equipos están muy parejos en el ranking",
+    "narrative_score": "es un partido con gran peso narrativo en el torneo",
+    "regional_affinity": "compite una selección de tu región",
 }
 
 _PENALTY_TEMPLATES: dict[str, str] = {
-    "timezone_penalty": "the kickoff time is inconvenient for your timezone",
-    "availability_score": "this match falls outside your available hours",
+    "timezone_penalty": "el horario de inicio es incómodo para tu zona horaria",
+    "availability_score": "el partido cae fuera de tus horarios disponibles",
 }
 
 _CATEGORY_INTROS: dict[str, str] = {
-    "imperdible": "Must-watch",
-    "vale_la_pena": "Worth watching",
-    "para_el_resumen": "Catch the highlights",
+    "imperdible": "Imperdible",
+    "vale_la_pena": "Vale la pena",
+    "para_el_resumen": "Mirá el resumen",
 }
 
 
@@ -47,7 +47,7 @@ def explain(
     positive_indices = [i for i, n in enumerate(FEATURE_NAMES) if n != "timezone_penalty"]
     top_idx = max(positive_indices, key=lambda i: features[i])
     top_feature = FEATURE_NAMES[top_idx]
-    reason = _FEATURE_TEMPLATES.get(top_feature, "this is an interesting match")
+    reason = _FEATURE_TEMPLATES.get(top_feature, "es un partido interesante")
 
     # Identify main obstacle (if any)
     has_penalty = features[4] > 0.5  # timezone_penalty index
@@ -55,8 +55,8 @@ def explain(
     obstacle = ""
     if category in ("vale_la_pena", "para_el_resumen"):
         if has_penalty:
-            obstacle = ", though the kickoff is at an awkward hour for you"
+            obstacle = ", aunque el horario de inicio es incómodo para vos"
         elif no_availability:
-            obstacle = ", though it falls outside your available time slots"
+            obstacle = ", aunque cae fuera de tus horarios disponibles"
 
     return f"{intro}: {reason}{obstacle}."

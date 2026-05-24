@@ -6,7 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.ml import classifier
+from app.modules.players.players_routes import router as players_router
 from app.modules.recommendations.recommendations_routes import router as recommendations_router
+from app.modules.setup.setup_routes import router as setup_router
 
 
 @asynccontextmanager
@@ -31,6 +33,8 @@ app.add_middleware(
 )
 
 app.include_router(recommendations_router)
+app.include_router(setup_router)
+app.include_router(players_router)
 
 
 @app.get("/health")

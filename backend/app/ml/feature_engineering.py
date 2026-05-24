@@ -119,8 +119,15 @@ def _availability_score(
     for slot in slots:
         if slot.day_of_week.lower() != day_name:
             continue
-        slot_start = match_local.replace(hour=slot.start_hour, minute=0, second=0, microsecond=0)
-        slot_end = match_local.replace(hour=slot.end_hour, minute=0, second=0, microsecond=0)
+        slot_start = match_local.replace(
+            hour=min(slot.start_hour, 23), minute=0, second=0, microsecond=0
+        )
+        if slot.end_hour == 24:
+            slot_end = (match_local + timedelta(days=1)).replace(
+                hour=0, minute=0, second=0, microsecond=0
+            )
+        else:
+            slot_end = match_local.replace(hour=slot.end_hour, minute=0, second=0, microsecond=0)
         overlap_start = max(match_local, slot_start)
         overlap_end = min(match_end, slot_end)
         if overlap_end > overlap_start:
