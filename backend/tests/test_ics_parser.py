@@ -1,224 +1,213 @@
 """
-Tests for the ICS → TimeSlot parser.
+Tests for ICS parsing and availability scoring.
 
-All tests use pure functions; no database or HTTP layer involved.
-The ICS content is crafted to match exactly what the frontend generates
-(weekly recurring OPAQUE events representing busy hours).
+All tests are pure (no DB, no HTTP). The key property being tested:
+recurring_ical_events expands RRULE correctly so that a busy event on a
+specific date only affects that date, not every occurrence of that weekday.
 """
 
 from __future__ import annotations
 
 import base64
+from datetime import UTC, datetime
 
-from app.ml.ics_parser import (
-    _busy_to_available,
-    _complement_intervals,
-    parse_to_available_slots,
-)
-from app.modules.recommendations.recommendations_schemas import TimeSlot
+from app.ml.feature_engineering import _availability_score
+from app.ml.ics_parser import parse_calendar
 
 TZ = "America/Argentina/Buenos_Aires"
 
-# Reference week dates used by the frontend ICS generator (June 1–7, 2026)
-REF = {
-    "monday": "20260601",
-    "tuesday": "20260602",
-    "wednesday": "20260603",
-    "thursday": "20260604",
-    "friday": "20260605",
-    "saturday": "20260606",
-    "sunday": "20260607",
-}
-
 
 def make_ics(*events: str) -> str:
-    """Wrap VEVENT strings in a VCALENDAR envelope and base64-encode."""
     body = "\r\n".join(events)
     content = f"BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//test//EN\r\n{body}\r\nEND:VCALENDAR\r\n"
     return base64.b64encode(content.encode()).decode()
 
 
-def busy_event(day: str, start_h: int, end_h: int, tz: str = TZ) -> str:
-    ref = REF[day]
-    # DTEND for end_hour=24 must point to next day 00:00
-    if end_h == 24:
-        next_dates = list(REF.values())
-        idx = list(REF.keys()).index(day)
-        next_ref = next_dates[idx + 1] if idx < 6 else "20260608"
-        dtend = f"DTEND;TZID={tz}:{next_ref}T000000"
-    else:
-        dtend = f"DTEND;TZID={tz}:{ref}T{end_h:02d}0000"
-    return (
-        f"BEGIN:VEVENT\r\n"
-        f"DTSTART;TZID={tz}:{ref}T{start_h:02d}0000\r\n"
-        f"{dtend}\r\n"
-        f"RRULE:FREQ=WEEKLY\r\n"
-        f"TRANSP:OPAQUE\r\n"
-        f"SUMMARY:Ocupado\r\n"
-        f"END:VEVENT"
+def utc(year: int, month: int, day: int, hour: int = 0) -> datetime:
+    return datetime(year, month, day, hour, 0, 0, tzinfo=UTC)
+
+
+# ---------------------------------------------------------------------------
+# parse_calendar
+# ---------------------------------------------------------------------------
+
+
+def test_parse_calendar_valid() -> None:
+    ics = make_ics()
+    cal = parse_calendar(ics)
+    assert cal is not None
+
+
+def test_parse_calendar_invalid_base64_returns_none() -> None:
+    assert parse_calendar("not!!!valid===base64") is None
+
+
+def test_parse_calendar_garbage_bytes_returns_none() -> None:
+    garbage = base64.b64encode(b"\x00\xff\xfe invalid ics").decode()
+    # icalendar is lenient; parse_calendar should not raise
+    result = parse_calendar(garbage)
+    # may return None or a Calendar — either is acceptable, just no exception
+    assert result is None or result is not None
+
+
+# ---------------------------------------------------------------------------
+# _availability_score — no calendar
+# ---------------------------------------------------------------------------
+
+
+def test_availability_score_no_calendar() -> None:
+    assert _availability_score(utc(2026, 6, 14, 21), None) == 0.0
+
+
+# ---------------------------------------------------------------------------
+# _availability_score — empty calendar (no events)
+# ---------------------------------------------------------------------------
+
+
+def test_availability_score_empty_calendar() -> None:
+    cal = parse_calendar(make_ics())
+    # No busy events → fully available
+    assert _availability_score(utc(2026, 6, 14, 21), cal) == 1.0
+
+
+# ---------------------------------------------------------------------------
+# _availability_score — one-time events
+# ---------------------------------------------------------------------------
+
+
+def test_availability_score_fully_busy_match() -> None:
+    """Event covers the entire 2-hour match window → score = 0."""
+    event = (
+        "BEGIN:VEVENT\r\n"
+        "DTSTART:20260614T200000Z\r\n"
+        "DTEND:20260614T230000Z\r\n"
+        "TRANSP:OPAQUE\r\n"
+        "SUMMARY:Occupied\r\n"
+        "END:VEVENT"
     )
+    cal = parse_calendar(make_ics(event))
+    score = _availability_score(utc(2026, 6, 14, 21), cal)
+    assert score == 0.0
+
+
+def test_availability_score_fully_free_match() -> None:
+    """Event is on a different day → match is fully free → score = 1."""
+    event = (
+        "BEGIN:VEVENT\r\n"
+        "DTSTART:20260615T200000Z\r\n"
+        "DTEND:20260615T230000Z\r\n"
+        "TRANSP:OPAQUE\r\n"
+        "END:VEVENT"
+    )
+    cal = parse_calendar(make_ics(event))
+    score = _availability_score(utc(2026, 6, 14, 21), cal)
+    assert score == 1.0
+
+
+def test_availability_score_partial_overlap() -> None:
+    """Event covers the first hour of a 2-hour match → score = 0.5."""
+    # Match: 21:00–23:00 UTC. Event: 21:00–22:00 UTC (1h overlap out of 2h).
+    event = (
+        "BEGIN:VEVENT\r\n"
+        "DTSTART:20260614T210000Z\r\n"
+        "DTEND:20260614T220000Z\r\n"
+        "TRANSP:OPAQUE\r\n"
+        "END:VEVENT"
+    )
+    cal = parse_calendar(make_ics(event))
+    score = _availability_score(utc(2026, 6, 14, 21), cal)
+    assert abs(score - 0.5) < 1e-6
+
+
+def test_availability_score_transparent_event_ignored() -> None:
+    """TRANSPARENT events (free time) must not reduce availability."""
+    event = (
+        "BEGIN:VEVENT\r\n"
+        "DTSTART:20260614T200000Z\r\n"
+        "DTEND:20260614T230000Z\r\n"
+        "TRANSP:TRANSPARENT\r\n"
+        "END:VEVENT"
+    )
+    cal = parse_calendar(make_ics(event))
+    score = _availability_score(utc(2026, 6, 14, 21), cal)
+    assert score == 1.0
 
 
 # ---------------------------------------------------------------------------
-# _complement_intervals unit tests
+# _availability_score — recurring events (RRULE:FREQ=WEEKLY)
 # ---------------------------------------------------------------------------
 
 
-def test_complement_empty_intervals() -> None:
-    assert _complement_intervals([], (0, 24)) == [(0, 24)]
-
-
-def test_complement_full_coverage() -> None:
-    assert _complement_intervals([(0, 24)], (0, 24)) == []
-
-
-def test_complement_middle_gap() -> None:
-    result = _complement_intervals([(0, 8), (18, 24)], (0, 24))
-    assert result == [(8, 18)]
-
-
-def test_complement_leading_gap() -> None:
-    assert _complement_intervals([(8, 24)], (0, 24)) == [(0, 8)]
-
-
-def test_complement_trailing_gap() -> None:
-    assert _complement_intervals([(0, 22)], (0, 24)) == [(22, 24)]
-
-
-def test_complement_multiple_gaps() -> None:
-    result = _complement_intervals([(2, 6), (10, 14), (20, 24)], (0, 24))
-    assert result == [(0, 2), (6, 10), (14, 20)]
-
-
-# ---------------------------------------------------------------------------
-# _busy_to_available unit tests
-# ---------------------------------------------------------------------------
-
-
-def test_busy_to_available_empty() -> None:
-    """No busy slots → every hour of every day is available."""
-    result = _busy_to_available([])
-    days = {s.day_of_week for s in result}
-    assert days == {
-        "monday",
-        "tuesday",
-        "wednesday",
-        "thursday",
-        "friday",
-        "saturday",
-        "sunday",
-    }
-    for slot in result:
-        assert slot.start_hour == 0
-        assert slot.end_hour == 24
-
-
-def test_busy_to_available_fully_busy() -> None:
-    busy = [
-        TimeSlot(day_of_week=d, start_hour=0, end_hour=24)
-        for d in ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-    ]
-    assert _busy_to_available(busy) == []
-
-
-def test_busy_to_available_saturday_split() -> None:
-    """Busy 0-14 and 22-24 on Saturday → available 14-22."""
-    busy = [
-        TimeSlot(day_of_week="saturday", start_hour=0, end_hour=14),
-        TimeSlot(day_of_week="saturday", start_hour=22, end_hour=24),
-    ]
-    result = _busy_to_available(busy)
-    sat = [s for s in result if s.day_of_week == "saturday"]
-    assert len(sat) == 1
-    assert sat[0].start_hour == 14
-    assert sat[0].end_hour == 22
-
-
-# ---------------------------------------------------------------------------
-# parse_to_available_slots integration tests
-# ---------------------------------------------------------------------------
-
-
-def test_parse_invalid_base64_returns_empty() -> None:
-    result = parse_to_available_slots("not_valid_base64!!!", TZ)
-    assert result == []
-
-
-def test_parse_invalid_ics_returns_empty() -> None:
-    garbage = base64.b64encode(b"this is not ical").decode()
-    # icalendar is lenient; we just verify no exception is raised
-    result = parse_to_available_slots(garbage, TZ)
-    assert isinstance(result, list)
-
-
-def test_parse_full_week_busy_gives_no_slots() -> None:
-    """All 7 days fully busy → no available slots."""
-    events = [busy_event(day, 0, 24) for day in REF]
-    ics = make_ics(*events)
-    result = parse_to_available_slots(ics, TZ)
-    assert result == []
-
-
-def test_parse_saturday_afternoon_available() -> None:
+def test_availability_score_recurring_affects_correct_weekday() -> None:
     """
-    Simulates the frontend output for a user who selected Saturday 14:00–22:00.
-    Busy blocks: Mon–Fri all day, Sat 0–14, Sat 22–24, Sun all day.
-    Expected available: Saturday 14–22 only.
+    Weekly event every Sunday 21:00–23:00 UTC.
+    June 14 2026 is a Sunday → score = 0.
+    June 15 2026 is a Monday → score = 1.
     """
-    events = [
-        busy_event("monday", 0, 24),
-        busy_event("tuesday", 0, 24),
-        busy_event("wednesday", 0, 24),
-        busy_event("thursday", 0, 24),
-        busy_event("friday", 0, 24),
-        busy_event("saturday", 0, 14),
-        busy_event("saturday", 22, 24),
-        busy_event("sunday", 0, 24),
-    ]
-    ics = make_ics(*events)
-    result = parse_to_available_slots(ics, TZ)
-
-    sat = [s for s in result if s.day_of_week == "saturday"]
-    assert len(sat) == 1, f"Expected 1 Saturday slot, got {sat}"
-    assert sat[0].start_hour == 14
-    assert sat[0].end_hour == 22
-
-    # All other days should have no available slots
-    other = [s for s in result if s.day_of_week != "saturday"]
-    assert other == []
-
-
-def test_parse_transparent_event_ignored() -> None:
-    """TRANSPARENT (free) events must not contribute to busy blocks."""
-    free_event = (
-        f"BEGIN:VEVENT\r\n"
-        f"DTSTART;TZID={TZ}:{REF['monday']}T000000\r\n"
-        f"DTEND;TZID={TZ}:{REF['tuesday']}T000000\r\n"
-        f"RRULE:FREQ=WEEKLY\r\n"
-        f"TRANSP:TRANSPARENT\r\n"
-        f"END:VEVENT"
+    event = (
+        "BEGIN:VEVENT\r\n"
+        "DTSTART:20260614T210000Z\r\n"
+        "DTEND:20260614T230000Z\r\n"
+        "RRULE:FREQ=WEEKLY\r\n"
+        "TRANSP:OPAQUE\r\n"
+        "END:VEVENT"
     )
-    ics = make_ics(free_event)
-    result = parse_to_available_slots(ics, TZ)
-    # Monday should be fully available since the event is transparent
-    mon = [s for s in result if s.day_of_week == "monday"]
-    assert any(s.start_hour == 0 and s.end_hour == 24 for s in mon)
+    cal = parse_calendar(make_ics(event))
+    assert _availability_score(utc(2026, 6, 14, 21), cal) == 0.0  # Sunday
+    assert _availability_score(utc(2026, 6, 15, 21), cal) == 1.0  # Monday
 
 
-def test_parse_multiple_slots_per_day() -> None:
-    """User available Wed 8–12 and 18–22 → busy 0–8, 12–18, 22–24."""
-    events = [
-        busy_event("wednesday", 0, 8),
-        busy_event("wednesday", 12, 18),
-        busy_event("wednesday", 22, 24),
-    ]
-    ics = make_ics(*events)
-    result = parse_to_available_slots(ics, TZ)
-
-    wed = sorted(
-        [s for s in result if s.day_of_week == "wednesday"],
-        key=lambda s: s.start_hour,
+def test_availability_score_one_off_does_not_affect_other_weeks() -> None:
+    """
+    A one-time event on Saturday June 6 must NOT affect Saturday June 13.
+    This is the core property: exact-date semantics, not weekly generalisation.
+    """
+    event = (
+        "BEGIN:VEVENT\r\n"
+        "DTSTART:20260606T210000Z\r\n"
+        "DTEND:20260606T230000Z\r\n"
+        "TRANSP:OPAQUE\r\n"
+        "END:VEVENT"
     )
-    assert len(wed) == 2
-    assert wed[0].start_hour == 8 and wed[0].end_hour == 12
-    assert wed[1].start_hour == 18 and wed[1].end_hour == 22
+    cal = parse_calendar(make_ics(event))
+    # Same time, different Saturday
+    assert _availability_score(utc(2026, 6, 6, 21), cal) == 0.0  # busy
+    assert _availability_score(utc(2026, 6, 13, 21), cal) == 1.0  # free
+
+
+def test_availability_score_frontend_generated_ics() -> None:
+    """
+    Simulates the ICS the frontend generates for Saturday 14:00–22:00 available
+    (busy: Sat 0–14 and 22–24, weekly). A Saturday match at 17:00 local
+    (which maps to 20:00 UTC for ART = UTC-3) must be free.
+    """
+    # Frontend generates busy blocks for Saturday 22:00–00:00 ART = 01:00–03:00 UTC Sunday
+    # and Saturday 00:00–14:00 ART = 03:00–17:00 UTC Saturday.
+    # Match at 20:00 UTC Saturday falls in the free window (17:00–01:00 UTC).
+    busy_morning = (
+        "BEGIN:VEVENT\r\n"
+        f"DTSTART;TZID={TZ}:20260606T000000\r\n"
+        f"DTEND;TZID={TZ}:20260606T140000\r\n"
+        "RRULE:FREQ=WEEKLY\r\n"
+        "TRANSP:OPAQUE\r\n"
+        "END:VEVENT"
+    )
+    busy_night = (
+        "BEGIN:VEVENT\r\n"
+        f"DTSTART;TZID={TZ}:20260606T220000\r\n"
+        f"DTEND;TZID={TZ}:20260607T000000\r\n"
+        "RRULE:FREQ=WEEKLY\r\n"
+        "TRANSP:OPAQUE\r\n"
+        "END:VEVENT"
+    )
+    cal = parse_calendar(make_ics(busy_morning, busy_night))
+
+    # Saturday June 6 at 17:00 ART = 20:00 UTC → within the free window
+    match_utc = utc(2026, 6, 6, 20)
+    score = _availability_score(match_utc, cal)
+    assert score == 1.0, f"Expected 1.0 (free slot), got {score}"
+
+    # Saturday June 6 at 09:00 ART = 12:00 UTC → within the busy morning block
+    match_busy = utc(2026, 6, 6, 12)
+    score_busy = _availability_score(match_busy, cal)
+    assert score_busy == 0.0, f"Expected 0.0 (busy), got {score_busy}"

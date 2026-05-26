@@ -5,7 +5,7 @@ Features:
   0  team_affinity          — favorite team is playing (0/1)
   1  rival_affinity         — rival of favorite team is playing (0–1)
   2  star_player_playing    — user's favorite player is in this squad (0/1)
-  3  availability_score     — fraction of match time in user's free slots (0–1)
+  3  availability_score     — fraction of match time NOT covered by busy calendar events (0–1)
   4  timezone_penalty       — local hour inconvenience (0–1, late night = 1)
   5  rivalry_index          — H2H rivalry intensity from match data (0–10) → normalized /10
   6  star_power             — combined star power of both teams, normalized (0–1)
@@ -17,12 +17,14 @@ Features:
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import numpy as np
+import recurring_ical_events
+from icalendar import Calendar
 
-from app.modules.recommendations.recommendations_schemas import MatchData, TimeSlot, UserProfile
+from app.modules.recommendations.recommendations_schemas import MatchData, UserProfile
 
 FEATURE_NAMES = [
     "team_affinity",
@@ -101,37 +103,55 @@ def _user_confederation(country_code: str) -> str | None:
     return None
 
 
-def _availability_score(match_utc: datetime, slots: list[TimeSlot], tz_name: str) -> float:
-    """Fraction of a 2-hour match window overlapping the user's available slots."""
-    try:
-        tz = ZoneInfo(tz_name)
-    except (ZoneInfoNotFoundError, KeyError):
-        tz = ZoneInfo("UTC")
+def _to_utc(dt_value: date | datetime) -> datetime:
+    """Normalise a date or datetime to a UTC-aware datetime."""
+    if isinstance(dt_value, datetime):
+        if dt_value.tzinfo is None:
+            return dt_value.replace(tzinfo=UTC)
+        return dt_value.astimezone(UTC)
+    # All-day event (date only) — treat as start of day in UTC
+    return datetime(dt_value.year, dt_value.month, dt_value.day, tzinfo=UTC)
 
-    match_local = match_utc.astimezone(tz)
-    match_end = match_local + timedelta(hours=2)
 
-    day_name = match_local.strftime("%A").lower()
+def _availability_score(match_utc: datetime, cal: Calendar | None) -> float:
+    """
+    Fraction of the 2-hour match window NOT covered by busy calendar events.
 
-    total_overlap = 0.0
-    for slot in slots:
-        if slot.day_of_week.lower() != day_name:
+    Uses recurring_ical_events to expand recurrences to the exact match
+    datetime, so a one-off event on a specific Saturday only affects that
+    Saturday, not every Saturday.
+    """
+    if cal is None:
+        return 0.0
+
+    # Ensure the match start is UTC-aware before querying
+    if match_utc.tzinfo is None:
+        match_utc = match_utc.replace(tzinfo=UTC)
+    match_end = match_utc + timedelta(hours=2)
+
+    # Get all calendar events that overlap the 2-hour match window
+    events = recurring_ical_events.of(cal).between(match_utc, match_end)
+
+    busy_seconds = 0.0
+    for event in events:
+        transp = str(event.get("TRANSP", "OPAQUE")).upper()
+        if transp == "TRANSPARENT":
             continue
-        slot_start = match_local.replace(
-            hour=min(slot.start_hour, 23), minute=0, second=0, microsecond=0
-        )
-        if slot.end_hour == 24:
-            slot_end = (match_local + timedelta(days=1)).replace(
-                hour=0, minute=0, second=0, microsecond=0
-            )
-        else:
-            slot_end = match_local.replace(hour=slot.end_hour, minute=0, second=0, microsecond=0)
-        overlap_start = max(match_local, slot_start)
-        overlap_end = min(match_end, slot_end)
-        if overlap_end > overlap_start:
-            total_overlap += (overlap_end - overlap_start).total_seconds()
 
-    return min(total_overlap / 7200.0, 1.0)
+        dtstart = event.get("DTSTART")
+        dtend = event.get("DTEND")
+        if not dtstart or not dtend:
+            continue
+
+        busy_start = _to_utc(dtstart.dt)
+        busy_end = _to_utc(dtend.dt)
+
+        overlap_start = max(match_utc, busy_start)
+        overlap_end = min(match_end, busy_end)
+        if overlap_end > overlap_start:
+            busy_seconds += (overlap_end - overlap_start).total_seconds()
+
+    return max(0.0, 1.0 - busy_seconds / 7200.0)
 
 
 def _timezone_penalty(match_utc: datetime, tz_name: str) -> float:
@@ -159,9 +179,7 @@ def _expected_competitiveness(rank_a: int, rank_b: int) -> float:
     return max(0.0, 1.0 - gap / _MAX_FIFA_RANK)
 
 
-# available_slots is passed explicitly (parsed from ICS upstream in the service layer)
-# instead of being read from profile, which no longer carries that field.
-def compute(profile: UserProfile, match: MatchData, available_slots: list[TimeSlot]) -> np.ndarray:
+def compute(profile: UserProfile, match: MatchData, cal: Calendar | None) -> np.ndarray:
     fav_teams = _normalize_names(profile.favorite_teams)
     fav_players = _normalize_names(profile.favorite_players)
 
@@ -184,8 +202,8 @@ def compute(profile: UserProfile, match: MatchData, available_slots: list[TimeSl
     all_players = team_a_players | team_b_players
     star_player_playing = 1.0 if fav_players & all_players else 0.0
 
-    # 3 — availability_score
-    avail = _availability_score(match.utc_datetime, available_slots, profile.timezone)
+    # 3 — availability_score: checks exact match datetime against the user's calendar
+    avail = _availability_score(match.utc_datetime, cal)
 
     # 4 — timezone_penalty
     tz_penalty = _timezone_penalty(match.utc_datetime, profile.timezone)
@@ -232,7 +250,7 @@ def compute(profile: UserProfile, match: MatchData, available_slots: list[TimeSl
 
 
 def compute_batch(
-    profile: UserProfile, matches: list[MatchData], available_slots: list[TimeSlot]
+    profile: UserProfile, matches: list[MatchData], cal: Calendar | None
 ) -> np.ndarray:
     """Return shape (n_matches, 11) feature matrix."""
-    return np.vstack([compute(profile, m, available_slots) for m in matches])
+    return np.vstack([compute(profile, m, cal) for m in matches])

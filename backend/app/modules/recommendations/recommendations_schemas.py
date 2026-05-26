@@ -6,18 +6,11 @@ from datetime import datetime
 from pydantic import BaseModel, Field, field_validator
 
 
-# Promoted to top-level: used both in the API schema and the ICS parser.
-class TimeSlot(BaseModel):
-    day_of_week: str = Field(..., examples=["saturday"])
-    start_hour: int = Field(..., ge=0, le=23)
-    end_hour: int = Field(..., ge=1, le=24)
-
-
 class UserProfile(BaseModel):
     favorite_teams: list[str] = Field(default_factory=list)
     favorite_players: list[str] = Field(default_factory=list)
-    # ICS file (base64-encoded) replaces the old available_slots list.
-    # The backend parses busy blocks from the ICS to derive availability.
+    # ICS file (base64-encoded) — the backend parses busy events directly
+    # from the calendar to compute per-match availability.
     ics_content: str = Field(..., description="Base64-encoded .ics calendar file")
     timezone: str = Field(default="UTC", examples=["America/Argentina/Buenos_Aires"])
     country: str = Field(default="", examples=["AR"], description="ISO 3166-1 alpha-2")
