@@ -22,7 +22,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import numpy as np
 
-from app.modules.recommendations.recommendations_schemas import MatchData, UserProfile
+from app.modules.recommendations.recommendations_schemas import MatchData, TimeSlot, UserProfile
 
 FEATURE_NAMES = [
     "team_affinity",
@@ -101,9 +101,7 @@ def _user_confederation(country_code: str) -> str | None:
     return None
 
 
-def _availability_score(
-    match_utc: datetime, slots: list[UserProfile.TimeSlot], tz_name: str
-) -> float:
+def _availability_score(match_utc: datetime, slots: list[TimeSlot], tz_name: str) -> float:
     """Fraction of a 2-hour match window overlapping the user's available slots."""
     try:
         tz = ZoneInfo(tz_name)
@@ -161,7 +159,9 @@ def _expected_competitiveness(rank_a: int, rank_b: int) -> float:
     return max(0.0, 1.0 - gap / _MAX_FIFA_RANK)
 
 
-def compute(profile: UserProfile, match: MatchData) -> np.ndarray:
+# available_slots is passed explicitly (parsed from ICS upstream in the service layer)
+# instead of being read from profile, which no longer carries that field.
+def compute(profile: UserProfile, match: MatchData, available_slots: list[TimeSlot]) -> np.ndarray:
     fav_teams = _normalize_names(profile.favorite_teams)
     fav_players = _normalize_names(profile.favorite_players)
 
@@ -185,7 +185,7 @@ def compute(profile: UserProfile, match: MatchData) -> np.ndarray:
     star_player_playing = 1.0 if fav_players & all_players else 0.0
 
     # 3 — availability_score
-    avail = _availability_score(match.utc_datetime, profile.available_slots, profile.timezone)
+    avail = _availability_score(match.utc_datetime, available_slots, profile.timezone)
 
     # 4 — timezone_penalty
     tz_penalty = _timezone_penalty(match.utc_datetime, profile.timezone)
@@ -231,6 +231,8 @@ def compute(profile: UserProfile, match: MatchData) -> np.ndarray:
     )
 
 
-def compute_batch(profile: UserProfile, matches: list[MatchData]) -> np.ndarray:
+def compute_batch(
+    profile: UserProfile, matches: list[MatchData], available_slots: list[TimeSlot]
+) -> np.ndarray:
     """Return shape (n_matches, 11) feature matrix."""
-    return np.vstack([compute(profile, m) for m in matches])
+    return np.vstack([compute(profile, m, available_slots) for m in matches])

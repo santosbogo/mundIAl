@@ -64,10 +64,15 @@ function IndexPage() {
     );
   }
 
-  const totalHours = profile.available_slots.reduce(
-    (sum, s) => sum + (s.end_hour - s.start_hour),
-    0,
-  );
+  // For manual mode, compute total available hours for display.
+  // For uploaded ICS, we don't have pre-parsed slots, so show a placeholder.
+  const totalHours =
+    profile.ics_source === "manual"
+      ? profile.available_slots.reduce(
+          (sum, s) => sum + (s.end_hour - s.start_hour),
+          0,
+        )
+      : null;
   const tzLabel =
     timezones.find((t) => t.value === profile.timezone)?.label ??
     TIMEZONES.find((t) => t.value === profile.timezone)?.label ??
@@ -107,8 +112,8 @@ function IndexPage() {
               color: "var(--brand-blue)",
             },
             {
-              label: "Horas/sem",
-              value: totalHours,
+              label: "Horarios",
+              value: totalHours !== null ? totalHours : "📅",
               color: "var(--brand-green)",
             },
           ].map(({ label, value, color }) => (
@@ -183,10 +188,16 @@ function IndexPage() {
             icon={<Clock className="h-4 w-4" />}
             iconBg="var(--brand-green)"
             title="Disponibilidad"
-            count={`${totalHours}h`}
+            count={totalHours !== null ? `${totalHours}h` : "Agenda propia"}
             onEdit={() => void navigate({ to: "/setup", search: { step: 3 } })}
           >
-            <WeekHeatmap slots={profile.available_slots} />
+            {profile.ics_source === "manual" ? (
+              <WeekHeatmap slots={profile.available_slots} />
+            ) : (
+              <p className="text-[13px] text-[var(--ink-500)]">
+                Calendario .ics importado
+              </p>
+            )}
           </SummaryCard>
 
           <SummaryCard
