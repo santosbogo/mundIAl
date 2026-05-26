@@ -34,7 +34,7 @@ function readProfile(): UserProfile | null {
       return migrated;
     }
 
-    return parsed as UserProfile;
+    return parsed as unknown as UserProfile;
   } catch {
     return null;
   }
