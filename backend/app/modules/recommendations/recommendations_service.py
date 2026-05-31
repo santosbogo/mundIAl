@@ -3,7 +3,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.ml import classifier, explainer, feature_engineering
+from app.ml import classifier, explainer, feature_engineering, ics_parser
 from app.modules.recommendations import recommendations_repository
 from app.modules.recommendations.recommendations_schemas import (
     GetRecommendationsInput,
@@ -29,7 +29,12 @@ async def get_recommendations(
     profile = input_data.profile
     matches = await recommendations_repository.get_all_matches(db)
 
-    feature_matrix = feature_engineering.compute_batch(profile, matches)
+    # Parse the ICS once and pass the Calendar object to the ML pipeline.
+    # _availability_score queries it per-match using recurring_ical_events,
+    # so a one-off event only affects that specific match datetime.
+    cal = ics_parser.parse_calendar(profile.ics_content)
+
+    feature_matrix = feature_engineering.compute_batch(profile, matches, cal)
     categories, scores, features = classifier.predict(feature_matrix)
 
     result: dict[str, list[MatchRecommendation]] = {

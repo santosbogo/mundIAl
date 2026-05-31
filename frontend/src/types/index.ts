@@ -7,7 +7,18 @@ export interface TimeSlot {
 export interface UserProfile {
   favorite_teams: string[];
   favorite_players: string[];
+  /**
+   * available_slots is kept for UI display purposes only (WeekHeatmap, hours stat).
+   * For uploaded ICS, this is empty; the heatmap falls back to a "Calendario importado" notice.
+   */
   available_slots: TimeSlot[];
+  /**
+   * Base64-encoded .ics file — this is what gets sent to the backend.
+   * Either generated from available_slots (manual mode) or set from an uploaded file.
+   */
+  ics_content: string;
+  /** Tracks how the ICS was produced; used only for display decisions in the UI. */
+  ics_source: "manual" | "upload";
   timezone: string;
   country: string;
 }

@@ -14,6 +14,8 @@ dependencies = [
     "numpy>=2.0",
     "joblib>=1.4",
     "pytz>=2024.1",
+    "icalendar>=5.0",
+    "recurring-ical-events>=3.8.2",
 ]
 
 [dependency-groups]

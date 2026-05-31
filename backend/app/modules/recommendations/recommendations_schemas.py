@@ -1,21 +1,28 @@
 from __future__ import annotations
 
+import base64
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class UserProfile(BaseModel):
-    class TimeSlot(BaseModel):
-        day_of_week: str = Field(..., examples=["saturday"])
-        start_hour: int = Field(..., ge=0, le=23)
-        end_hour: int = Field(..., ge=1, le=24)
-
     favorite_teams: list[str] = Field(default_factory=list)
     favorite_players: list[str] = Field(default_factory=list)
-    available_slots: list[TimeSlot] = Field(default_factory=list)
+    # ICS file (base64-encoded) — the backend parses busy events directly
+    # from the calendar to compute per-match availability.
+    ics_content: str = Field(..., description="Base64-encoded .ics calendar file")
     timezone: str = Field(default="UTC", examples=["America/Argentina/Buenos_Aires"])
     country: str = Field(default="", examples=["AR"], description="ISO 3166-1 alpha-2")
+
+    @field_validator("ics_content")
+    @classmethod
+    def validate_base64(cls, v: str) -> str:
+        try:
+            base64.b64decode(v, validate=True)
+        except Exception as exc:
+            raise ValueError("ics_content must be valid base64") from exc
+        return v
 
 
 class MatchData(BaseModel):
