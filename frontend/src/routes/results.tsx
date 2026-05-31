@@ -70,7 +70,9 @@ function SectionHeader({
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="text-xl leading-tight text-foreground">{category.label}</h2>
+          <h2 className="text-xl leading-tight text-foreground">
+            {category.label}
+          </h2>
           <span
             className="rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.24em]"
             style={{ backgroundColor: category.soft, color: category.color }}
@@ -236,7 +238,9 @@ function ResultsPage() {
             <Button
               variant="outline"
               className="h-12 w-full rounded-br-2xl rounded-bl-2xl rounded-tr-2xl rounded-tl-none text-muted-foreground hover:text-foreground"
-              onClick={() => void navigate({ to: "/setup", search: { step: 1 } })}
+              onClick={() =>
+                void navigate({ to: "/setup", search: { step: 1 } })
+              }
             >
               Ajustar perfil y recalcular
             </Button>

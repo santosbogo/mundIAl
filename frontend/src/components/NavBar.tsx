@@ -14,7 +14,9 @@ export function NavBar({ rightSlot }: NavBarProps) {
         >
           mund<span className="text-primary">IA</span>l
         </span>
-        {rightSlot && <div className="flex items-center gap-2">{rightSlot}</div>}
+        {rightSlot && (
+          <div className="flex items-center gap-2">{rightSlot}</div>
+        )}
       </div>
     </header>
   );

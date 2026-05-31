@@ -26,7 +26,8 @@ export function StepLocation({
 }: StepLocationProps) {
   function getTimezoneLabel(value: string | null) {
     return (
-      timezones.find((currentTimezone) => currentTimezone.value === value)?.label ??
+      timezones.find((currentTimezone) => currentTimezone.value === value)
+        ?.label ??
       value ??
       "Seleccioná una zona horaria"
     );

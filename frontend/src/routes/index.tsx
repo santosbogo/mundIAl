@@ -60,15 +60,17 @@ function IndexPage() {
                   Elegí qué partidos del Mundial 2026 valen tu tiempo.
                 </h1>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
-                  Armamos tu agenda ideal según tus equipos, jugadores y horarios
-                  disponibles para separar imperdibles, planes opcionales y
-                  resúmenes.
+                  Armamos tu agenda ideal según tus equipos, jugadores y
+                  horarios disponibles para separar imperdibles, planes
+                  opcionales y resúmenes.
                 </p>
               </div>
 
               <div className="mt-6 flex flex-wrap gap-3">
                 <Button
-                  onClick={() => void navigate({ to: "/setup", search: { step: 1 } })}
+                  onClick={() =>
+                    void navigate({ to: "/setup", search: { step: 1 } })
+                  }
                   className="h-12 gap-2 rounded-br-2xl rounded-bl-2xl rounded-tr-2xl rounded-tl-none px-6"
                   size="lg"
                 >
@@ -142,7 +144,9 @@ function IndexPage() {
               iconBg="var(--secondary-soft)"
               title="Equipos favoritos"
               count={profile.favorite_teams.length}
-              onEdit={() => void navigate({ to: "/setup", search: { step: 1 } })}
+              onEdit={() =>
+                void navigate({ to: "/setup", search: { step: 1 } })
+              }
             >
               <div className="flex flex-wrap gap-2">
                 {profile.favorite_teams.map((team) => {
@@ -164,7 +168,9 @@ function IndexPage() {
               iconBg="var(--primary-soft)"
               title="Jugadores favoritos"
               count={profile.favorite_players.length || "—"}
-              onEdit={() => void navigate({ to: "/setup", search: { step: 2 } })}
+              onEdit={() =>
+                void navigate({ to: "/setup", search: { step: 2 } })
+              }
             >
               {profile.favorite_players.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
@@ -189,15 +195,19 @@ function IndexPage() {
               icon={<Clock3 className="h-4 w-4" />}
               iconBg="rgba(255, 209, 102, 0.12)"
               title="Disponibilidad"
-              count={totalHours !== null ? `${totalHours} horas` : "Calendario .ics"}
-              onEdit={() => void navigate({ to: "/setup", search: { step: 3 } })}
+              count={
+                totalHours !== null ? `${totalHours} horas` : "Calendario .ics"
+              }
+              onEdit={() =>
+                void navigate({ to: "/setup", search: { step: 3 } })
+              }
             >
               {profile.ics_source === "manual" ? (
                 <WeekHeatmap slots={profile.available_slots} />
               ) : (
                 <p className="text-sm leading-6 text-muted-foreground">
-                  Estás usando un calendario importado para calcular tus ventanas
-                  disponibles.
+                  Estás usando un calendario importado para calcular tus
+                  ventanas disponibles.
                 </p>
               )}
             </SummaryCard>
@@ -207,9 +217,13 @@ function IndexPage() {
               iconBg="rgba(142, 167, 255, 0.14)"
               title="Ubicación"
               count={countryLabel}
-              onEdit={() => void navigate({ to: "/setup", search: { step: 4 } })}
+              onEdit={() =>
+                void navigate({ to: "/setup", search: { step: 4 } })
+              }
             >
-              <p className="text-sm leading-6 text-muted-foreground">{tzLabel}</p>
+              <p className="text-sm leading-6 text-muted-foreground">
+                {tzLabel}
+              </p>
             </SummaryCard>
           </section>
 
@@ -218,7 +232,11 @@ function IndexPage() {
               <AlertTitle>No pudimos generar recomendaciones</AlertTitle>
               <AlertDescription className="mt-1">
                 {error instanceof Error ? error.message : "Error desconocido"}
-                <button type="button" onClick={reset} className="ml-2 underline">
+                <button
+                  type="button"
+                  onClick={reset}
+                  className="ml-2 underline"
+                >
                   Reintentar
                 </button>
               </AlertDescription>

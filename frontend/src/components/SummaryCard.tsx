@@ -31,9 +31,7 @@ export function SummaryCard({
             <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
               {title}
             </p>
-            <p className="text-2xl leading-tight text-foreground">
-              {count}
-            </p>
+            <p className="text-2xl leading-tight text-foreground">{count}</p>
           </div>
         </div>
         {onEdit && (

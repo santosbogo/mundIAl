@@ -64,7 +64,9 @@ export function IcsUploadZone({
           <>
             <Upload className="h-10 w-10 text-muted-foreground/80" />
             <div>
-              <p className="font-medium text-foreground">Subí tu calendario .ics</p>
+              <p className="font-medium text-foreground">
+                Subí tu calendario .ics
+              </p>
               <p className="mt-1 text-xs text-muted-foreground">
                 Arrastrá el archivo aquí o hacé clic para seleccionarlo.
               </p>

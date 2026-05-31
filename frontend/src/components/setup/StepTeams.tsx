@@ -7,10 +7,8 @@ interface StepTeamsProps {
   onChange: (teams: string[]) => void;
 }
 
-export function StepTeams({
-  selectedTeams,
-  teams,
-  onChange,
-}: StepTeamsProps) {
-  return <TeamPicker selected={selectedTeams} onChange={onChange} teams={teams} />;
+export function StepTeams({ selectedTeams, teams, onChange }: StepTeamsProps) {
+  return (
+    <TeamPicker selected={selectedTeams} onChange={onChange} teams={teams} />
+  );
 }

@@ -1,6 +1,19 @@
-import { useCallback, useEffect, useRef, useState, type ComponentType } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ComponentType,
+} from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Clock3, MapPin, Shield, Star } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Clock3,
+  MapPin,
+  Shield,
+  Star,
+} from "lucide-react";
 import { z } from "zod";
 import { searchPlayers } from "@/api/players";
 import { StepperHeader } from "@/components/StepperHeader";
@@ -157,7 +170,11 @@ function SetupPage() {
     },
   };
 
-  const { title, subtitle, icon: StepIcon } = stepTitles[step] ?? {
+  const {
+    title,
+    subtitle,
+    icon: StepIcon,
+  } = stepTitles[step] ?? {
     title: "",
     subtitle: "",
     icon: Shield,
