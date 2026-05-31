@@ -18,7 +18,7 @@ export function SummaryCard({
   children,
 }: SummaryCardProps) {
   return (
-    <div className="rounded-2xl border border-[var(--line)] bg-white p-4">
+    <div className="rounded-2xl border p-4">
       <div className="mb-3 flex items-start justify-between">
         <div className="flex items-center gap-3">
           <div

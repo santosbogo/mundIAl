@@ -89,7 +89,7 @@ export function MatchRow({ match }: MatchRowProps) {
         </div>
 
         {/* explanation */}
-        <p className="text-[12px] italic text-[var(--ink-500)]">
+        <p className="text-[12px] italic">
           {match.explanation}
         </p>
       </div>

@@ -227,7 +227,7 @@ function ResultsPage() {
       </div>
 
       {/* Footer CTA */}
-      <div className="fixed bottom-0 left-0 right-0 border-t border-[var(--line)] bg-white/95 px-5 py-3 backdrop-blur-sm">
+      <div className="fixed bottom-0 left-0 right-0 border-t border-[var(--line)] bg-white px-5 py-3">
         <div className="mx-auto max-w-lg">
           <Button
             variant="outline"

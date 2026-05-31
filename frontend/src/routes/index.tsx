@@ -38,7 +38,7 @@ function IndexPage() {
 
   if (!profile) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-white px-5 text-center">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-6 px-5 text-center">
         <div className="text-6xl">⚽</div>
         <div>
           <h1 className="mb-2 text-3xl font-bold tracking-tight text-[var(--ink-900)]">
@@ -51,13 +51,13 @@ function IndexPage() {
         </div>
         <Button
           onClick={() => void navigate({ to: "/setup", search: { step: 1 } })}
-          className="h-12 gap-2 bg-[var(--brand-red)] px-8 text-white shadow-lg hover:bg-[#c8152a]"
+          className="h-12 gap-2 px-8 text-white"
           size="lg"
         >
           Configurar mi perfil
           <ChevronRight className="h-4 w-4" />
         </Button>
-        <p className="text-xs text-[var(--ink-500)]">
+        <p className="text-xs">
           Gratis · Sin registro · 2 minutos
         </p>
       </div>
@@ -83,7 +83,7 @@ function IndexPage() {
     profile.country;
 
   return (
-    <div className="min-h-screen bg-[var(--surface-2)]">
+    <div className="min-h-screen">
       <NavBar
         rightSlot={
           <Button
@@ -119,7 +119,7 @@ function IndexPage() {
           ].map(({ label, value, color }) => (
             <div
               key={label}
-              className="rounded-2xl border border-[var(--line)] bg-white p-3 text-center"
+              className="rounded-2xl p-3 text-center"
             >
               <p className="text-xl font-bold" style={{ color }}>
                 {value}
@@ -226,7 +226,7 @@ function IndexPage() {
       </div>
 
       {/* Sticky CTA footer */}
-      <div className="sticky bottom-0 border-t border-[var(--line)] bg-white/95 px-5 py-3 backdrop-blur-sm">
+      <div className="sticky bottom-0 border-t border-[var(--line)] bg-white px-5 py-3">
         <div className="mx-auto max-w-lg">
           {isPending ? (
             <div className="space-y-2">
@@ -235,7 +235,7 @@ function IndexPage() {
           ) : (
             <Button
               onClick={handleRecommend}
-              className="h-12 w-full gap-2 bg-[var(--brand-red)] text-white shadow-md hover:bg-[#c8152a]"
+              className="h-12 w-full gap-2 bg-[var(--brand-red)] text-white hover:bg-[#c8152a]"
               size="lg"
             >
               ⚽ Ver mis recomendaciones
