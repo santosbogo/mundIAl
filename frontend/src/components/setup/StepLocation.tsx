@@ -53,7 +53,12 @@ export function StepLocation({
             Para calcular los horarios locales
           </span>
         </label>
-        <Select value={timezone} onValueChange={onTimezoneChange}>
+        <Select
+          value={timezone}
+          onValueChange={(value) => {
+            if (value) onTimezoneChange(value);
+          }}
+        >
           <SelectTrigger className="h-12 w-full rounded-2xl border-border bg-[color:var(--surface-elevated)] px-4 text-sm text-foreground focus-visible:border-primary/60 focus-visible:ring-2 focus-visible:ring-primary/20 data-placeholder:text-muted-foreground">
             <SelectValue placeholder="Seleccioná una zona horaria">
               {(value) => getTimezoneLabel(value as string | null)}
@@ -81,7 +86,12 @@ export function StepLocation({
             Código ISO de 2 letras (ej: AR, BR, MX)
           </span>
         </label>
-        <Select value={country} onValueChange={onCountryChange}>
+        <Select
+          value={country}
+          onValueChange={(value) => {
+            if (value) onCountryChange(value);
+          }}
+        >
           <SelectTrigger className="h-12 w-full rounded-2xl border-border bg-[color:var(--surface-elevated)] px-4 text-sm text-foreground focus-visible:border-primary/60 focus-visible:ring-2 focus-visible:ring-primary/20 data-placeholder:text-muted-foreground">
             <SelectValue placeholder="Seleccioná un país">
               {(value) => getCountryLabel(value as string | null)}

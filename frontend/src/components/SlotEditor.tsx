@@ -57,7 +57,9 @@ export function SlotEditor({ slots, onChange }: SlotEditorProps) {
         >
           <Select
             value={slot.day_of_week}
-            onValueChange={(value) => updateSlot(i, { day_of_week: value })}
+            onValueChange={(value) => {
+              if (value) updateSlot(i, { day_of_week: value });
+            }}
           >
             <SelectTrigger className="h-10 min-w-0 flex-1 rounded-xl border-border bg-[color:var(--surface-elevated)] px-3 text-sm text-foreground focus-visible:border-primary/60 focus-visible:ring-2 focus-visible:ring-primary/20">
               <SelectValue placeholder="Día">
