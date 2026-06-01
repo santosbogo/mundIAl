@@ -216,7 +216,7 @@ function SetupPage() {
 
               {slotMode === "manual" && (
                 <>
-                  <WeekHeatmap slots={slots} />
+                  <WeekHeatmap slots={slots} onChange={setSlots} />
                   <SlotEditor slots={slots} onChange={setSlots} />
                 </>
               )}
